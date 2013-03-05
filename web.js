@@ -8,12 +8,12 @@ http.createServer(function(req, res) {
 	var request = url.parse(req.url, true);
 	var action = request.pathname;
 
-	webshot('google.com', 'google.png', function(err) {
+	webshot('google.com', '/tmp/google.png', function(err) {
 
-		var img = fs.readFileSync('google.png');
+		var img = fs.readFileSync('/tmp/google.png');
 		res.writeHead(200, {'Content-Type': 'image/gif' });
 		res.end(img, 'binary');
-		fs.unlink('google.png');
+		fs.unlink('/tmp/google.png');
 
 	});
 
