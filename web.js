@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var webshot = require('webshot');
+var gm = require('gm');
+var imageMagick = gm.subClass({ imageMagick: true });
 
 var options = {
 	screenSize: {
@@ -18,12 +20,22 @@ app.get('/:gist', function(req, res) {
 
 	var gist = req.params.gist;
 
-	webshot('livecoding.io/s/' + gist, gist + '.png', options, function(err) {
+	webshot('google.com', 'google.png', options, function(err) {
+//	webshot('livecoding.io/s/' + gist, gist + '.png', options, function(err) {
 
-		var img = fs.readFileSync(gist + '.png');
-		res.writeHead(200, {'Content-Type': 'image/png' });
-		res.end(img, 'binary');
-		fs.unlink(gist + '.png');
+		var buf = fs.readFileSync('google.png');	
+
+		imageMagick(buf, 'google.png')
+			.resize(100, 100)
+			.write('google1.png', function(err) {
+				console.log(err);
+				// var img = fs.readFileSync('google1.png');
+
+				// res.writeHead(200, {'Content-Type': 'image/png' });
+				// res.end(img, 'binary');
+				// fs.unlink('google1.png');
+				// fs.unlink('google.png');
+			});
 
 	});
 
