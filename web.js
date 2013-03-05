@@ -8,14 +8,14 @@ http.createServer(function(req, res) {
 	var request = url.parse(req.url, true);
 	var action = request.pathname;
 
-	webshot('google.com', '/tmp/google.png', function(err) {
+	webshot('google.com', 'google.png', function(err) {
 
 		console.log('saved');
 
-		var img = fs.readFile('/tmp/google.png', function);
+		var img = fs.readFileSync('google.png');
 		res.writeHead(200, {'Content-Type': 'image/gif' });
 		res.end(img, 'binary');
-		fs.unlink('/tmp/google.png');
+		fs.unlink('google.png');
 
 	});
 
