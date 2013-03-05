@@ -12,10 +12,10 @@ http.createServer(function(req, res) {
 
 		console.log('saved');
 
-		// var img = fs.readFile('/tmp/google.png', function);
-		// res.writeHead(200, {'Content-Type': 'image/gif' });
-		// res.end(img, 'binary');
-		// fs.unlink('/tmp/google.png');
+		var img = fs.readFile('/tmp/google.png', function);
+		res.writeHead(200, {'Content-Type': 'image/gif' });
+		res.end(img, 'binary');
+		fs.unlink('/tmp/google.png');
 
 	});
 
