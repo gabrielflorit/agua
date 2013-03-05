@@ -10,14 +10,15 @@ http.createServer(function(req, res) {
 
 	webshot('google.com', 'google.png', function(err) {
 
-		var img = fs.readFileSync('./google.png');
+		var img = fs.readFileSync('google.png');
 		res.writeHead(200, {'Content-Type': 'image/gif' });
 		res.end(img, 'binary');
+		fs.unlink('google.png');
 
 	});
 
 
-}).listen(process.env.PORT);
+}).listen(process.env.PORT || 5000);
 
 
 // var express = require('express');
