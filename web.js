@@ -32,12 +32,12 @@ app.get('/:gist', function(req, res) {
 			.resize(100, 100)
 			.write('google1.png', function(err) {
 				console.log(err);
-				// var img = fs.readFileSync('google1.png');
+					var img = fs.readFileSync('google1.png');
 
-				// res.writeHead(200, {'Content-Type': 'image/png' });
-				// res.end(img, 'binary');
-				// fs.unlink('google1.png');
-				// fs.unlink('google.png');
+					res.writeHead(200, {'Content-Type': 'image/png' });
+					res.end(img, 'binary');
+					fs.unlink('google1.png');
+					fs.unlink('google.png');
 			});
 
 	});
