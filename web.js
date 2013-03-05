@@ -1,41 +1,48 @@
+var express = require('express');
+var app = express();
 var fs = require('fs');
-var http = require('http');
-var url = require('url');
 var webshot = require('webshot');
 
+var options = {
+	screenSize: {
+		width: 1024,
+		height: 768
+	},
+	showSize: {
+		width: 'window',
+		height: 'window'
+	}
+};
 
-http.createServer(function(req, res) {
-	var request = url.parse(req.url, true);
-	var action = request.pathname;
+app.get('/:gist', function(req, res) {
 
-	webshot('google.com', 'google.png', function(err) {
+	var gist = req.params.gist;
 
-		console.log('saved');
+	webshot('livecoding.io/s/' + gist, gist + '.png', options, function(err) {
 
-		var img = fs.readFileSync('google.png');
-		res.writeHead(200, {'Content-Type': 'image/gif' });
+		var img = fs.readFileSync(gist + '.png');
+		res.writeHead(200, {'Content-Type': 'image/png' });
 		res.end(img, 'binary');
-		fs.unlink('google.png');
+		fs.unlink(gist + '.png');
 
 	});
 
+});
 
-}).listen(process.env.PORT || 5000);
+app.get('/:gist/:version', function(req, res) {
 
+	var gist = req.params.gist;
+	var version = req.params.version;
 
-// var express = require('express');
-// var fs = require('fs');
+	webshot('livecoding.io/s/' + gist + '/' + version, gist + '-' + version + '.png', options, function(err) {
 
-// var app = express.createServer(express.logger());
+		var img = fs.readFileSync(gist + '-' + version + '.png');
+		res.writeHead(200, {'Content-Type': 'image/png' });
+		res.end(img, 'binary');
+		fs.unlink(gist + '-' + version + '.png');
 
-// app.get('/', function(request, response) {
-// 	response.send('Hello World!');
-// });
+	});
 
-// var port = process.env.PORT || 5000;
-// app.listen(port, function() {
-// 	console.log("Listening on " + port);
-// });
+});
 
-
-
+app.listen(process.env.PORT || 5000);
