@@ -16,23 +16,29 @@ var options = {
 	}
 };
 
+var processImage = function(res, name) {
+
+	var buf = fs.readFileSync(name + '.png');
+
+	imageMagick(buf, name + '.png')
+		.resize(320, 240)
+		.write(name + '1.png', function(err) {
+				var img = fs.readFileSync(name + '1.png');
+				res.writeHead(200, {'Content-Type': 'image/png' });
+				res.end(img, 'binary');
+				fs.unlink(name + '1.png');
+				fs.unlink(name + '.png');
+		});
+
+};
+
 app.get('/:gist', function(req, res) {
 
 	var gist = req.params.gist;
+	var name = gist;
 
 	webshot('livecoding.io/s/' + gist, gist + '.png', options, function(err) {
-		var buf = fs.readFileSync(gist + '.png');
-
-		imageMagick(buf, gist + '.png')
-			.resize(320, 240)
-			.write(gist + '1.png', function(err) {
-					var img = fs.readFileSync(gist + '1.png');
-					res.writeHead(200, {'Content-Type': 'image/png' });
-					res.end(img, 'binary');
-					fs.unlink(gist + '1.png');
-					fs.unlink(gist + '.png');
-			});
-
+		processImage(res, name);
 	});
 
 });
@@ -41,19 +47,10 @@ app.get('/:gist/:version', function(req, res) {
 
 	var gist = req.params.gist;
 	var version = req.params.version;
+	var name = gist + '-' + version;
 
-	webshot('livecoding.io/s/' + gist + '/' + version, gist + '-' + version + '.png', options, function(err) {
-
-		imageMagick(buf, gist + '-' + version + '.png')
-			.resize(320, 240)
-			.write(gist + '-' + version + '1.png', function(err) {
-					var img = fs.readFileSync(gist + '-' + version + '1.png');
-					res.writeHead(200, {'Content-Type': 'image/png' });
-					res.end(img, 'binary');
-					fs.unlink(gist + '-' + version + '1.png');
-					fs.unlink(gist + '-' + version + '.png');
-			});
-
+	webshot('livecoding.io/s/' + gist + '/' + version, name + '.png', options, function(err) {
+		processImage(res, name);
 	});
 
 });
