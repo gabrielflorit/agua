@@ -20,8 +20,11 @@ app.get('/:gist', function(req, res) {
 
 	var gist = req.params.gist;
 
+	console.log('getting webshot');
+
 	webshot('google.com', 'google.png', options, function(err) {
 //	webshot('livecoding.io/s/' + gist, gist + '.png', options, function(err) {
+		console.log('got webshot');
 
 		var buf = fs.readFileSync('google.png');	
 
