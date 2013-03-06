@@ -16,36 +16,39 @@ var options = {
 	}
 };
 
-app.get('/:gist', function(req, res) {
+app.get('/:gist/:time', function(req, res) {
 
 	var gist = req.params.gist;
+	var time = req.params.time;
+	var name = [gist, time].join('');
+	var nameAndType = name + '.png';
 
 	var cloudinary_options = {width: 180, height: 135};
 
-	var url = cloudinary.url(gist + '.png', cloudinary_options);
+	var url = cloudinary.url(nameAndType, cloudinary_options);
 
 	http_get.get({url: url}, null, function (error) {
 
 		if (error) {
 
 			// image doesn't exist - let's create it
-			webshot('livecoding.io/s/' + gist + '?hideWatermark=True', gist + '.png', options, function(err) {
+			webshot('livecoding.io/s/' + gist + '?hideWatermark=True', nameAndType, options, function(err) {
 
 				if (err) {
 					console.log(err);
 				} else {
 
-					console.log('created ' + gist + '.png');
+					console.log('created ' + nameAndType);
 
 					// upload image
-					cloudinary.uploader.upload(gist + '.png', function() {
+					cloudinary.uploader.upload(nameAndType, function() {
 
-						console.log('uploaded ' + gist + '.png');
+						console.log('uploaded ' + nameAndType);
 
 						// return the url
-						res.send(cloudinary.url(gist + '.png', cloudinary_options));
+						res.send(cloudinary.url(nameAndType, cloudinary_options));
 
-					}, {public_id: gist});
+					}, {public_id: name});
 				}
 			});
 
