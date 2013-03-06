@@ -2,8 +2,8 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var webshot = require('webshot');
-var gm = require('gm');
-var imageMagick = gm.subClass({ imageMagick: true });
+var cloudinary = require('cloudinary');
+var http_get = require('http-get');
 
 var options = {
 	screenSize: {
@@ -16,71 +16,43 @@ var options = {
 	}
 };
 
-var processImageWithBuf = function(res, name, buf) {
-
-	imageMagick(buf, name + '.png')
-		.resize(180, 135)
-		.quality(95)
-		.write(name + '1.png', function(err) {
-				var img = fs.readFileSync(name + '1.png');
-				res.writeHead(200, {'Content-Type': 'image/png' });
-				res.end(img, 'binary');
-		});
-
-};
-
-var processImage = function(res, name) {
-
-	var buf = fs.readFileSync(name + '.png');
-
-	processImageWithBuf(res, name, buf);
-
-};
-
 app.get('/:gist', function(req, res) {
 
 	var gist = req.params.gist;
-	var name = gist;
 
-	// try to read file first
-	fs.readFile(name + '.png', function(err, buf) {
+	var cloudinary_options = {width: 180, height: 135};
 
-		// if it errors out, assume there's no file
-		if (err) {
+	var url = cloudinary.url(gist + '.png', cloudinary_options);
+
+	http_get.get({url: url}, null, function (error) {
+
+		if (error) {
+
+			// image doesn't exist - let's create it
 			webshot('livecoding.io/s/' + gist + '?hideWatermark=True', gist + '.png', options, function(err) {
+
 				if (err) {
 					console.log(err);
 				} else {
-					processImage(res, name);
+
+					console.log('created ' + gist + '.png');
+
+					// upload image
+					cloudinary.uploader.upload(gist + '.png', function() {
+
+						console.log('uploaded ' + gist + '.png');
+
+						// return the url
+						res.send(cloudinary.url(gist + '.png', cloudinary_options));
+
+					}, {public_id: gist});
 				}
 			});
+
 		} else {
-				processImage(res, name, buf);
-		}
-	});
 
-});
-
-app.get('/:gist/:version', function(req, res) {
-
-	var gist = req.params.gist;
-	var version = req.params.version;
-	var name = gist + '-' + version;
-
-	// try to read file first
-	fs.readFile(name + '.png', function(err, buf) {
-
-		// if it errors out, assume there's no file
-		if (err) {
-			webshot('livecoding.io/s/' + gist + '/' + version + '?hideWatermark=True', name + '.png', options, function(err) {
-				if (err) {
-					console.log(err);
-				} else {
-					processImage(res, name);
-				}
-			});
-		} else {
-				processImage(res, name, buf);
+			// image exists - return the url
+			res.send(url);
 		}
 	});
 
