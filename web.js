@@ -47,7 +47,7 @@ app.get('/:gist/:time', function(req, res) {
 						console.log('uploaded ' + nameAndType);
 
 						// return the url
-						res.json(cloudinary.url(nameAndType, cloudinary_options));
+						res.jsonp(cloudinary.url(nameAndType, cloudinary_options));
 
 					}, {public_id: name});
 				}
@@ -56,7 +56,7 @@ app.get('/:gist/:time', function(req, res) {
 		} else {
 
 			// image exists - return the url
-			res.json(url);
+			res.jsonp(url);
 		}
 	});
 
