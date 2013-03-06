@@ -16,9 +16,7 @@ var options = {
 	}
 };
 
-var processImage = function(res, name) {
-
-	var buf = fs.readFileSync(name + '.png');
+var processImageWithBuf = function(res, name, buf) {
 
 	imageMagick(buf, name + '.png')
 		.resize(320, 240)
@@ -26,9 +24,15 @@ var processImage = function(res, name) {
 				var img = fs.readFileSync(name + '1.png');
 				res.writeHead(200, {'Content-Type': 'image/png' });
 				res.end(img, 'binary');
-				fs.unlink(name + '1.png');
-				fs.unlink(name + '.png');
 		});
+
+};
+
+var processImage = function(res, name) {
+
+	var buf = fs.readFileSync(name + '.png');
+
+	processImageWithBuf(res, name, buf);
 
 };
 
@@ -37,8 +41,21 @@ app.get('/:gist', function(req, res) {
 	var gist = req.params.gist;
 	var name = gist;
 
-	webshot('livecoding.io/s/' + gist, gist + '.png', options, function(err) {
-		processImage(res, name);
+	// try to read file first
+	fs.readFile(name + '.png', function(err, buf) {
+
+		// if it errors out, assume there's no file
+		if (err) {
+			webshot('livecoding.io/s/' + gist + '?hideWatermark=True', gist + '.png', options, function(err) {
+				if (err) {
+					console.log(err);
+				} else {
+					processImage(res, name);
+				}
+			});
+		} else {
+				processImage(res, name, buf);
+		}
 	});
 
 });
@@ -49,8 +66,21 @@ app.get('/:gist/:version', function(req, res) {
 	var version = req.params.version;
 	var name = gist + '-' + version;
 
-	webshot('livecoding.io/s/' + gist + '/' + version, name + '.png', options, function(err) {
-		processImage(res, name);
+	// try to read file first
+	fs.readFile(name + '.png', function(err, buf) {
+
+		// if it errors out, assume there's no file
+		if (err) {
+			webshot('livecoding.io/s/' + gist + '/' + version + '?hideWatermark=True', name + '.png', options, function(err) {
+				if (err) {
+					console.log(err);
+				} else {
+					processImage(res, name);
+				}
+			});
+		} else {
+				processImage(res, name, buf);
+		}
 	});
 
 });
