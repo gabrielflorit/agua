@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+app.enable('jsonp callback');
 var fs = require('fs');
 var webshot = require('webshot');
 var cloudinary = require('cloudinary');
@@ -46,7 +47,7 @@ app.get('/:gist/:time', function(req, res) {
 						console.log('uploaded ' + nameAndType);
 
 						// return the url
-						res.send(cloudinary.url(nameAndType, cloudinary_options));
+						res.json(cloudinary.url(nameAndType, cloudinary_options));
 
 					}, {public_id: name});
 				}
@@ -55,7 +56,7 @@ app.get('/:gist/:time', function(req, res) {
 		} else {
 
 			// image exists - return the url
-			res.send(url);
+			res.json(url);
 		}
 	});
 
