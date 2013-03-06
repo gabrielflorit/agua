@@ -19,7 +19,7 @@ var options = {
 var processImageWithBuf = function(res, name, buf) {
 
 	imageMagick(buf, name + '.png')
-		.resize(320, 240)
+		.resize(240, 180)
 		.write(name + '1.png', function(err) {
 				var img = fs.readFileSync(name + '1.png');
 				res.writeHead(200, {'Content-Type': 'image/png' });
