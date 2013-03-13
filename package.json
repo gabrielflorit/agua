@@ -5,7 +5,10 @@
 		"webshot": "",
 		"express": "",
 		"http-get": "",
-		"cloudinary": ""
+		"cloudinary": "",
+		"nodetime": "",
+		"timekit": "",
+		"v8tools": ""
 	},
 	"engines": {
 		"node": "0.8.x",

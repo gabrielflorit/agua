@@ -1,3 +1,11 @@
+if(process.env.NODETIME_ACCOUNT_KEY) {
+  require('nodetime').profile({
+    accountKey: process.env.NODETIME_ACCOUNT_KEY,
+    appName: 'agua' // optional
+  });
+}
+
+
 var express = require('express');
 var app = express();
 app.enable('jsonp callback');
