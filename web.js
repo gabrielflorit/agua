@@ -11,10 +11,7 @@ var options = {
 		width: 1024,
 		height: 768
 	},
-	showSize: {
-		width: 'window',
-		height: 'window'
-	}
+	renderDelay: 1000
 };
 
 app.get('/:gist/:time', function(req, res) {
