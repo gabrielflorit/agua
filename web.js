@@ -10,8 +10,7 @@ var options = {
 	screenSize: {
 		width: 1024,
 		height: 768
-	},
-	renderDelay: 1000
+	}
 };
 
 app.get('/:gist/:time', function(req, res) {
